@@ -2,4 +2,5 @@
 caffe_model/*
 !caffe_model/.gitkeep
 processed_images/*.png
+processed_images/*.jpeg
 sliding_window/*.jpeg
