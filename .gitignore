@@ -1,1 +1,5 @@
 .bundle
+caffe_model/*
+!caffe_model/.gitkeep
+processed_images/*.png
+sliding_window/*.jpeg
