@@ -1,0 +1,76 @@
+diff --git a/src/caffe/layers/window_data_layer.cpp b/src/caffe/layers/window_data_layer.cpp
+index 1bf3760e9fd..f41169debe4 100644
+--- a/src/caffe/layers/window_data_layer.cpp
++++ b/src/caffe/layers/window_data_layer.cpp
+@@ -290,7 +290,7 @@ void WindowDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
+           image_database_cache_[window[WindowDataLayer<Dtype>::IMAGE_INDEX]];
+         cv_img = DecodeDatumToCVMat(image_cached.second, true);
+       } else {
+-        cv_img = cv::imread(image.first, CV_LOAD_IMAGE_COLOR);
++        cv_img = cv::imread(image.first, cv::IMREAD_COLOR);
+         if (!cv_img.data) {
+           LOG(ERROR) << "Could not open or find file " << image.first;
+           return;
+diff --git a/src/caffe/test/test_io.cpp b/src/caffe/test/test_io.cpp
+index c2c919e90dc..b80df287fba 100644
+--- a/src/caffe/test/test_io.cpp
++++ b/src/caffe/test/test_io.cpp
+@@ -20,8 +20,8 @@ class IOTest : public ::testing::Test {};
+ bool ReadImageToDatumReference(const string& filename, const int label,
+     const int height, const int width, const bool is_color, Datum* datum) {
+   cv::Mat cv_img;
+-  int cv_read_flag = (is_color ? CV_LOAD_IMAGE_COLOR :
+-    CV_LOAD_IMAGE_GRAYSCALE);
++  int cv_read_flag = (is_color ? cv::IMREAD_COLOR :
++    cv::IMREAD_GRAYSCALE);
+ 
+   cv::Mat cv_img_origin = cv::imread(filename, cv_read_flag);
+   if (!cv_img_origin.data) {
+diff --git a/python/caffe/io.py b/python/caffe/io.py
+index d0103d60892..1669c955a02 100644
+--- a/python/caffe/io.py
++++ b/python/caffe/io.py
+@@ -299,7 +299,7 @@ def load_image(filename, color=True):
+         of size (H x W x 3) in RGB or
+         of size (H x W x 1) in grayscale.
+     """
+-    img = skimage.img_as_float(skimage.io.imread(filename, as_grey=not color)).astype(np.float32)
++    img = skimage.img_as_float(skimage.io.imread(filename, as_gray=not color)).astype(np.float32)
+     if img.ndim == 2:
+         img = img[:, :, np.newaxis]
+         if color:
+diff --git a/src/caffe/util/io.cpp b/src/caffe/util/io.cpp
+index 5295d9dddb9..1f9167a114f 100644
+--- a/src/caffe/util/io.cpp
++++ b/src/caffe/util/io.cpp
+@@ -54,7 +54,7 @@ bool ReadProtoFromBinaryFile(const char* filename, Message* proto) {
+   CHECK_NE(fd, -1) << "File not found: " << filename;
+   ZeroCopyInputStream* raw_input = new FileInputStream(fd);
+   CodedInputStream* coded_input = new CodedInputStream(raw_input);
+-  coded_input->SetTotalBytesLimit(kProtoReadBytesLimit, 536870912);
++  coded_input->SetTotalBytesLimit(536870912);
+ 
+   bool success = proto->ParseFromCodedStream(coded_input);
+
+@@ -73,8 +73,8 @@ void WriteProtoToBinaryFile(const Message& proto, const char* filename) {
+ cv::Mat ReadImageToCVMat(const string& filename,
+     const int height, const int width, const bool is_color) {
+   cv::Mat cv_img;
+-  int cv_read_flag = (is_color ? CV_LOAD_IMAGE_COLOR :
+-    CV_LOAD_IMAGE_GRAYSCALE);
++  int cv_read_flag = (is_color ? cv::IMREAD_COLOR :
++    cv::IMREAD_GRAYSCALE);
+   cv::Mat cv_img_origin = cv::imread(filename, cv_read_flag);
+   if (!cv_img_origin.data) {
+     LOG(ERROR) << "Could not open or find file " << filename;
+@@ -179,8 +179,8 @@ cv::Mat DecodeDatumToCVMat(const Datum& datum, bool is_color) {
+   CHECK(datum.encoded()) << "Datum not encoded";
+   const string& data = datum.data();
+   std::vector<char> vec_data(data.c_str(), data.c_str() + data.size());
+-  int cv_read_flag = (is_color ? CV_LOAD_IMAGE_COLOR :
+-    CV_LOAD_IMAGE_GRAYSCALE);
++  int cv_read_flag = (is_color ? cv::IMREAD_COLOR :
++    cv::IMREAD_GRAYSCALE);
+   cv_img = cv::imdecode(vec_data, cv_read_flag);
+   if (!cv_img.data) {
+     LOG(ERROR) << "Could not decode datum ";
