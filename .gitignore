@@ -4,3 +4,4 @@ caffe_model/*
 processed_images/*.png
 processed_images/*.jpeg
 sliding_window/*.jpeg
+__pycache__/
