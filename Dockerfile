@@ -66,7 +66,7 @@ USER devel:devel
 ENV PYTHON_VENV=${HOME}/.python-venv
 RUN python -m venv ${PYTHON_VENV}
 ENV PATH=${PYTHON_VENV}/bin:${PATH}
-RUN pip install opencv-python==4.10.0.84
+RUN pip install opencv-contrib-python==4.10.0.84
 
 WORKDIR $CAFFE_ROOT
 
